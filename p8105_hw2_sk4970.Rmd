@@ -3,7 +3,6 @@ title: "P8105 HW 2- Sara Kramer (sk4970)
 output: github_document
 ---
 
-library(tidyverse)
 ```{r}
 library(tidyverse)
 
@@ -63,7 +62,19 @@ nyc_subway %>%
 
 # Problem 2
 ```{r}
+library(readxl)
+mr_trash_wheel <- read_excel("data/Trash Wheel Collection Data.xlsx", sheet = "Mr. Trash Wheel", range = "A2:N549") %>%
+  janitor::clean_names()
 
+mr_trash_wheel %>% 
+  select(-month, -year) %>%
+  na.omit(" ") %>%
+  sports_balls_int = as.integer(sports_balls)
+  round(sports_balls, digits = 0)
+
+##
+  
+  
 ```
 
 # Problem 3
