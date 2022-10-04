@@ -6,6 +6,7 @@ output: github_document
 ```{r}
 library(tidyverse)
 
+library(lubridate)
 ```
 
 # Problem 1
@@ -30,7 +31,7 @@ nyc_subway %>%
   filter(ada == TRUE) %>% 
   select(station_name, line) %>% 
   distinct
-## 84 stations
+## 84 stations that are ADA compliant
 
 nyc_subway %>% 
   filter(vending == "NO") %>% 
@@ -46,7 +47,7 @@ nyc_subway %>%
   filter(route == "A") %>% 
   select(station_name, line) %>% 
   distinct
-## 60 stations
+## 60 stations on A line
 
 nyc_subway %>% 
   pivot_longer(
@@ -56,7 +57,7 @@ nyc_subway %>%
   filter(route == "A", ada == TRUE) %>% 
   select(station_name, line) %>% 
   distinct
-## 17 stations
+## 17 stations on A line that are ADA compliant 
 
 ```
 
@@ -67,25 +68,60 @@ mr_trash_wheel <- read_excel("data/Trash Wheel Collection Data.xlsx", sheet = "M
   janitor::clean_names()
 
 mr_trash_wheel %>% 
-  select(-date) %>%
+  separate(col = date, into = c('year','month', 'day'), sep = '-') %>%
   na.omit(" ") %>%
-  as.integer("sports_balls")
-ADD VARIABLE TO BOTH
+  as.integer("sports_balls") %>%
+ADD VARIABLE TO IDENTIFY
+
 
 ##
 prof_trash_wheel <- read_excel("data/Trash Wheel Collection Data.xlsx", sheet = "Professor Trash Wheel", range = "A2:M96") %>%
   janitor::clean_names()
 
 prof_trash_wheel %>%
-  select(-date) %>%
-  na.omit(" ")
+  separate(col = date, into = c('year','month', 'day'), sep = '-') %>%
+  na.omit(" ") %>%
+ADD VARIABLE TO IDENTIFY
   
 trash_data = 
   inner_join(mr_trash_wheel, prof_trash_wheel, by = "dumpster")
+
+##SHORT PARA
 
 ```
 
 # Problem 3
 ```{r}
+pols_month =
+  read_csv(
+    "data/fivethirtyeight_datasets/pols-month.csv"
+  ) %>%
+  janitor::clean_names() %>%
+  na.omit(" ") %>%
+  separate(col = mon, into = c('year','month', 'day'), sep = '-') %>%
+  select(-day)
+CREATE PRES VARIABLE
+
+snp =
+  read_csv(
+    "data/fivethirtyeight_datasets/snp.csv"
+  ) %>%
+  janitor::clean_names() %>%
+  na.omit(" ") %>%
+  separate(col = mon, into = c('year','month', 'day'), sep = '-') %>%
+  select(-day)
+LEAD YR/MONTH
+
+unemployment =
+  read_csv(
+    "data/fivethirtyeight_datasets/unemployment.csv"
+  ) %>%
+  janitor::clean_names() %>%
+  na.omit(" ") %>%
+PIVOT LONGER
+
+JOIN SNP TO POLS. THEN ADD UNEMP
+
+##SHORT PARAGRAPH
 
 ```
