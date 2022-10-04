@@ -67,14 +67,22 @@ mr_trash_wheel <- read_excel("data/Trash Wheel Collection Data.xlsx", sheet = "M
   janitor::clean_names()
 
 mr_trash_wheel %>% 
-  select(-month, -year) %>%
+  select(-date) %>%
   na.omit(" ") %>%
-  sports_balls_int = as.integer(sports_balls)
-  round(sports_balls, digits = 0)
+  as.integer("sports_balls")
+ADD VARIABLE TO BOTH
 
 ##
+prof_trash_wheel <- read_excel("data/Trash Wheel Collection Data.xlsx", sheet = "Professor Trash Wheel", range = "A2:M96") %>%
+  janitor::clean_names()
+
+prof_trash_wheel %>%
+  select(-date) %>%
+  na.omit(" ")
   
-  
+trash_data = 
+  inner_join(mr_trash_wheel, prof_trash_wheel, by = "dumpster")
+
 ```
 
 # Problem 3
