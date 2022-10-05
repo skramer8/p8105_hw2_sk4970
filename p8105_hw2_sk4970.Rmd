@@ -1,5 +1,5 @@
 ---
-title: "P8105 HW 2- Sara Kramer (sk4970)
+title: P8105 HW 2- Sara Kramer (sk4970)
 output: github_document
 ---
 
@@ -9,6 +9,7 @@ library(tidyverse)
 
 # Problem 1
 ```{r}
+# reading in file, cleaning it, keeping line/station name/latitude/longitude/route/entry/exit-only/vending/entrance type/and dad compliance... mutating entry variable
 nyc_subway = 
   read_csv(
     "data/NYC_Transit_Subway_Entrance_And_Exit_Data.csv",
@@ -20,23 +21,27 @@ nyc_subway =
     ada) %>% 
   mutate(entry = ifelse(entry == "YES", TRUE, FALSE))
 
+# viewing number of distinct stations
 nyc_subway %>% 
   select(station_name, line) %>% 
   distinct
 ## 465 distinct stations
 
+# viewing number of distinct that are ADA compliant
 nyc_subway %>% 
   filter(ada == TRUE) %>% 
   select(station_name, line) %>% 
   distinct
 ## 84 stations that are ADA compliant
 
+# mean of stations one can enter that does not have vening
 nyc_subway %>% 
   filter(vending == "NO") %>% 
   pull(entry) %>% 
   mean
 ## 37.8% 
 
+# pivot longer subway and looking at number of stations on A line
 nyc_subway %>% 
   pivot_longer(
     route1:route11,
@@ -47,6 +52,7 @@ nyc_subway %>%
   distinct
 ## 60 stations on A line
 
+# number of stations on the A line that are ADA compliant
 nyc_subway %>% 
   pivot_longer(
     route1:route11,
@@ -57,7 +63,7 @@ nyc_subway %>%
   distinct
 ## 17 stations on A line that are ADA compliant 
 
-## The dataset has 20 variables and 239 observations. I imported rthe CSV file and cleaned the data. I got rid of some unnecssary vairables and reduced it to 10 variables. Then I modified the entry variable state if entry was possible at that location or not. To answer the various qiuestions I filtered by the characterics mentioned. 
+## The data set has 20 variables and 239 observations. I imported the CSV file and cleaned the data. I got rid of some unnecessary variables and reduced it to 10 variables. Then I modified the entry variable state if entry was possible at that location or not. To answer the various questions I filtered by the characteristics mentioned.
 
 ```
 
@@ -101,22 +107,23 @@ aggregate(mr_trash_wheel["sports_balls"],by = mr_trash_wheel["year"],sum)
 
 # Problem 3
 ```{r}
-# I imported pols month dataset and cleaned it. This included ommitting NAs, separting date variable and getting rid of the day variable. I mutated the month variable from being the # to the name. Added variable named "president"
+# I imported pols month data set and cleaned it. This included omitting NAs, separating the date variable and getting rid of the day variable. I mutated the month variable from being the # to the name. Added variable named "president" to show the political alignment of the president during a specific time
 pols_month =
   read_csv(
     "data/fivethirtyeight_datasets/pols-month.csv") %>%
   janitor::clean_names() %>%
-  na.omit(" ") %>%
   separate(col = mon, into = c('year','month', 'day'), sep = '-') %>%
-  select(-day) %>% 
   mutate(month = month.abb[as.numeric(month)]) %>%
-  president = case_when(prez_gop == 1 & prez_dem == 0 ~ "gop", prez_dem == 1 & prez_gop == 0 ~ "dem", TRUE ~ NA)
- 
-# I imported the snp data set and cleaned it. This included ommitting NAs, separting date variable and getting rid of day variable. I mutated the month variable from being the # to the name
+  na.omit(" ") 
+
+pols_month %>%
+    mutate(president = case_when(prez_dem == 0 & prez_gop == 1 ~ 'gop', prez_dem == 1 & prez_gop == 0 ~ 'dem')) %>%
+   select(-day, -prez_gop, -prez_dem)
+
+# I imported the snp data set and cleaned it. This included omitting NAs, separating the date variable and getting rid of day variable. I mutated the month variable from being the # to the name
 snp =
   read_csv(
-    "data/fivethirtyeight_datasets/snp.csv"
-  ) %>%
+    "data/fivethirtyeight_datasets/snp.csv") %>%
   janitor::clean_names() %>%
   na.omit(" ") %>%
   separate(col = date, into = c('month', 'day', 'year'), sep = '-') %>%
@@ -127,26 +134,29 @@ snp =
 # I imported the unemployment dataset, cleaned it, got rid of NAs, and pivoted longer
 unemployment =
   read_csv(
-    "data/fivethirtyeight_datasets/unemployment.csv"
-  ) %>%
+    "data/fivethirtyeight_datasets/unemployment.csv") %>%
   janitor::clean_names() %>%
   pivot_longer(
     jan:dec, 
     names_to = "month", 
     values_to = "percentage of unemployment") %>%
-  na.omit(" ") 
+  na.omit(" ") %>%
+mutate(year = as.character(year))
 
-#Joined dataset
+# Joined data set - snp to pols_month
 five_thirty_eight_1 = 
-  left_join(pols_month, snp, by = "year")
-
+  left_join(pols_month, snp, by = c("year", "month"))
+  
+# unemployment to other data sets
 five_thirty_eight_2 = 
- left_join(five_thirty_eight_1, unemployment, by = "year")
+ left_join(five_thirty_eight_1, unemployment, by = c("year", "month"))
 
-## Pols_month dataset:after combing the president variable, it had 9 variables - year, president, repupblican and democratic governors/senators/and represenatives. 4 variables once modified - year, day, month, and close. The prez_gop variable, which should only have values 0 and 1 has some values of 2 - unclear why that it. 
-## SNP dataset: has 4 variables - month, year, day, and S&P closing values of that day. 
-## unemployment dataset: has 13 variables (year and each month). the values correspond to the unemployment rate during that time.
-## Upon completion, the table was __ by __--__ variables and __ observations/ Years range from __ to ____ and key variables include:
+## Pols_month data set:after combing the president variable, it had 9 variables - year, president, republican and democratic governors/senators/and representatives. 4 variables once modified - year, day, month, and close. The prez_gop variable, which should only have values 0 and 1 has some values of 2 - unclear why that it. 
 
+## SNP data set: has 4 variables - month, year, day, and S&P closing values of that day. 
+
+## unemployment data set: has 13 variables (year and each month). the values correspond to the unemployment rate during that time.
+
+## Upon completion, the table was almost 9,696 by 15--15 variables and 9,696 observations/ Years range from 1947 to 2015 and key variables include: year, president, S&P closing stock values, and unemployment rate
 
 ```
