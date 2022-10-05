@@ -23,4 +23,4 @@ SNP data set: has 4 variables - month, year, day, and S&P closing values of that
 
 Unemployment data set: has 13 variables (year and each month). the values correspond to the unemployment rate during that time.
 
-Upon completion, the table was almost 9,696 by 15--15 variables and 9,696 observations/ Years range from 1947 to 2015 and key variables include: year, president, S&P closing stock values, and unemployment rate
+Upon completion, the table was 822 by 15--15 variables and 822 observations (once NAs dropped, with NA's there are 9,696 observations) Years range from 1947 to 2015 and key variables include: year, president, S&P closing stock values, and unemployment rate

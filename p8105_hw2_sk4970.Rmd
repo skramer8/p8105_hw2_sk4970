@@ -149,7 +149,10 @@ five_thirty_eight_1 =
   
 # unemployment to other data sets
 five_thirty_eight_2 = 
- left_join(five_thirty_eight_1, unemployment, by = c("year", "month"))
+ left_join(five_thirty_eight_1, unemployment, by = c("year", "month")) 
+
+# excluding na's
+na.exclude(five_thirty_eight_2)
 
 ## Pols_month data set:after combing the president variable, it had 9 variables - year, president, republican and democratic governors/senators/and representatives. 4 variables once modified - year, day, month, and close. The prez_gop variable, which should only have values 0 and 1 has some values of 2 - unclear why that it. 
 
@@ -157,6 +160,7 @@ five_thirty_eight_2 =
 
 ## unemployment data set: has 13 variables (year and each month). the values correspond to the unemployment rate during that time.
 
-## Upon completion, the table was almost 9,696 by 15--15 variables and 9,696 observations/ Years range from 1947 to 2015 and key variables include: year, president, S&P closing stock values, and unemployment rate
+## Upon completion, the table was 822 by 15--15 variables and 822 observations (once NAs dropped, with NA's there are 9,696 observations) Years range from 1947 to 2015 and key variables include: year, president, S&P closing stock values, and unemployment rate
+
 
 ```
