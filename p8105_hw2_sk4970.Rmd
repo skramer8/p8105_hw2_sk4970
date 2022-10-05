@@ -3,8 +3,6 @@ title: "P8105 HW 2- Sara Kramer (sk4970)
 output: github_document
 ---
 
-ADD DESCRIPTIONS OF CONVERSATIOS, ETC TO EVERYTHING
-
 ```{r}
 library(tidyverse)
 ```
@@ -73,12 +71,9 @@ mr_trash_wheel <- read_excel("data/Trash Wheel Collection Data.xlsx", sheet = "M
 # I reduced the number variables, changed the date variable by separating m-d-yr, omitted NAs, & turned "sports balls" variable into an integer
 mr_trash_wheel %>% 
   separate(col = date, into = c('year','month', 'day'), sep = '-') %>%
-  na.omit(" ") %>%
-  as.integer("sports_balls")
+  as.integer("sports_balls", .) %>%
+  na.omit(" ") 
   
-pols_month %>%
- president = case_when(prez_gop == 1 & prez_dem == 0 ~ "gop",  prez_dem == 1 & prez_gop == 0 ~ "dem", TRUE ~ NA)
-
 ## I importanted the prof trash wheel and cleaned it
 prof_trash_wheel <- read_excel("data/Trash Wheel Collection Data.xlsx", sheet = "Professor Trash Wheel", range = "A2:M96") %>%
   janitor::clean_names()
@@ -90,7 +85,7 @@ prof_trash_wheel %>%
   
 ## I joined the mr trash wheel and prof trash wheel datasets
 trash_data = 
-  full_join(mr_trash_wheel, prof_trash_wheel, by = "dumpster")
+  full_join(mr_trash_wheel, prof_trash_wheel, by = "date")
 
 ## The combined data set has 94 observations. Key variables include weight of trash collected, dumpster number, how many of a specific item were collected, and when it was collected.
 
@@ -109,17 +104,14 @@ aggregate(mr_trash_wheel["sports_balls"],by = mr_trash_wheel["year"],sum)
 # I imported pols month dataset and cleaned it. This included ommitting NAs, separting date variable and getting rid of the day variable. I mutated the month variable from being the # to the name. Added variable named "president"
 pols_month =
   read_csv(
-    "data/fivethirtyeight_datasets/pols-month.csv"
-  ) %>%
+    "data/fivethirtyeight_datasets/pols-month.csv") %>%
   janitor::clean_names() %>%
   na.omit(" ") %>%
   separate(col = mon, into = c('year','month', 'day'), sep = '-') %>%
-  select(-day, -prez_dem, -prez_gop) %>% 
-  mutate[month = month.abb(as.numeric(Month))]
-
-pols_month %>%
- president = case_when(prez_gop == 1 & prez_dem == 0 ~ "gop",  prez_dem == 1 & prez_gop == 0 ~ "dem", TRUE ~ NA)
-
+  select(-day) %>% 
+  mutate(month = month.abb[as.numeric(month)]) %>%
+  president = case_when(prez_gop == 1 & prez_dem == 0 ~ "gop", prez_dem == 1 & prez_gop == 0 ~ "dem", TRUE ~ NA)
+ 
 # I imported the snp data set and cleaned it. This included ommitting NAs, separting date variable and getting rid of day variable. I mutated the month variable from being the # to the name
 snp =
   read_csv(
@@ -127,9 +119,10 @@ snp =
   ) %>%
   janitor::clean_names() %>%
   na.omit(" ") %>%
-  separate(col = date, into = c('day', 'month', 'year'), sep = '-') %>%
+  separate(col = date, into = c('month', 'day', 'year'), sep = '-') %>%
+  select(year, month, day, close) %>%
   select(-day) %>%
-  mutate[month = month.abb(as.numeric(Month))]
+  mutate(month = month.abb[as.numeric(month)])
 
 # I imported the unemployment dataset, cleaned it, got rid of NAs, and pivoted longer
 unemployment =
@@ -137,19 +130,23 @@ unemployment =
     "data/fivethirtyeight_datasets/unemployment.csv"
   ) %>%
   janitor::clean_names() %>%
-  na.omit(" ") %>%
-  pivot_longer()
+  pivot_longer(
+    jan:dec, 
+    names_to = "month", 
+    values_to = "percentage of unemployment") %>%
+  na.omit(" ") 
 
 #Joined dataset
 five_thirty_eight_1 = 
-  inner_join(pols_month, snp, by = "year")
+  left_join(pols_month, snp, by = "year")
 
 five_thirty_eight_2 = 
-  inner_join(five_thirty_eight_1, unemployment, by = "year")
+ left_join(five_thirty_eight_1, unemployment, by = "year")
 
-## Pols_month dataset:after combing the president variable, it had 9 variables - year, president, repupblican and democratic governors/senators/and represenatives. 4 variables once modified - year, day, month, and close
-## SNP dataset:
-## unemployment dataset: has 13 variables (year and each month)
+## Pols_month dataset:after combing the president variable, it had 9 variables - year, president, repupblican and democratic governors/senators/and represenatives. 4 variables once modified - year, day, month, and close. The prez_gop variable, which should only have values 0 and 1 has some values of 2 - unclear why that it. 
+## SNP dataset: has 4 variables - month, year, day, and S&P closing values of that day. 
+## unemployment dataset: has 13 variables (year and each month). the values correspond to the unemployment rate during that time.
 ## Upon completion, the table was __ by __--__ variables and __ observations/ Years range from __ to ____ and key variables include:
+
 
 ```
