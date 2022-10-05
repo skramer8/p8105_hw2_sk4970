@@ -3,10 +3,10 @@ title: "P8105 HW 2- Sara Kramer (sk4970)
 output: github_document
 ---
 
+ADD DESCRIPTIONS OF CONVERSATIOS, ETC TO EVERYTHING
+
 ```{r}
 library(tidyverse)
-
-library(lubridate)
 ```
 
 # Problem 1
@@ -59,39 +59,54 @@ nyc_subway %>%
   distinct
 ## 17 stations on A line that are ADA compliant 
 
+## The dataset has 20 variables and 239 observations. I imported rthe CSV file and cleaned the data. I got rid of some unnecssary vairables and reduced it to 10 variables. Then I modified the entry variable state if entry was possible at that location or not. To answer the various qiuestions I filtered by the characterics mentioned. 
+
 ```
 
 # Problem 2
 ```{r}
+# I imported the trash wheel collection data. I called up the Mr Trash Wheel data set and conducting an initial cleaning
 library(readxl)
 mr_trash_wheel <- read_excel("data/Trash Wheel Collection Data.xlsx", sheet = "Mr. Trash Wheel", range = "A2:N549") %>%
   janitor::clean_names()
 
+# I reduced the number variables, changed the date variable by separating m-d-yr, omitted NAs, & turned "sports balls" variable into an integer
 mr_trash_wheel %>% 
   separate(col = date, into = c('year','month', 'day'), sep = '-') %>%
   na.omit(" ") %>%
-  as.integer("sports_balls") %>%
-ADD VARIABLE TO IDENTIFY
+  as.integer("sports_balls")
+  
+pols_month %>%
+ president = case_when(prez_gop == 1 & prez_dem == 0 ~ "gop",  prez_dem == 1 & prez_gop == 0 ~ "dem", TRUE ~ NA)
 
-
-##
+## I importanted the prof trash wheel and cleaned it
 prof_trash_wheel <- read_excel("data/Trash Wheel Collection Data.xlsx", sheet = "Professor Trash Wheel", range = "A2:M96") %>%
   janitor::clean_names()
 
+# I reduced the number of variables, change date variable like I did for mr trash wheel, and omitted NAs
 prof_trash_wheel %>%
   separate(col = date, into = c('year','month', 'day'), sep = '-') %>%
-  na.omit(" ") %>%
-ADD VARIABLE TO IDENTIFY
+  na.omit(" ") 
   
+## I joined the mr trash wheel and prof trash wheel datasets
 trash_data = 
-  inner_join(mr_trash_wheel, prof_trash_wheel, by = "dumpster")
+  full_join(mr_trash_wheel, prof_trash_wheel, by = "dumpster")
 
-##SHORT PARA
+## The combined data set has 94 observations. Key variables include weight of trash collected, dumpster number, how many of a specific item were collected, and when it was collected.
+
+## total weight-prof trash wheel
+sum(prof_trash_wheel$weight_tons)
+### Professor Trash Wheel collected a total of 190.12 tons of trash
+
+## total sports balls collected in 2020
+aggregate(mr_trash_wheel["sports_balls"],by = mr_trash_wheel["year"],sum)
+### In 2020, a total of 856 sports balls were collected.
 
 ```
 
 # Problem 3
 ```{r}
+# I imported pols month dataset and cleaned it. This included ommitting NAs, separting date variable and getting rid of the day variable. I mutated the month variable from being the # to the name. Added variable named "president"
 pols_month =
   read_csv(
     "data/fivethirtyeight_datasets/pols-month.csv"
@@ -99,29 +114,42 @@ pols_month =
   janitor::clean_names() %>%
   na.omit(" ") %>%
   separate(col = mon, into = c('year','month', 'day'), sep = '-') %>%
-  select(-day)
-CREATE PRES VARIABLE
+  select(-day, -prez_dem, -prez_gop) %>% 
+  mutate[month = month.abb(as.numeric(Month))]
 
+pols_month %>%
+ president = case_when(prez_gop == 1 & prez_dem == 0 ~ "gop",  prez_dem == 1 & prez_gop == 0 ~ "dem", TRUE ~ NA)
+
+# I imported the snp data set and cleaned it. This included ommitting NAs, separting date variable and getting rid of day variable. I mutated the month variable from being the # to the name
 snp =
   read_csv(
     "data/fivethirtyeight_datasets/snp.csv"
   ) %>%
   janitor::clean_names() %>%
   na.omit(" ") %>%
-  separate(col = mon, into = c('year','month', 'day'), sep = '-') %>%
-  select(-day)
-LEAD YR/MONTH
+  separate(col = date, into = c('day', 'month', 'year'), sep = '-') %>%
+  select(-day) %>%
+  mutate[month = month.abb(as.numeric(Month))]
 
+# I imported the unemployment dataset, cleaned it, got rid of NAs, and pivoted longer
 unemployment =
   read_csv(
     "data/fivethirtyeight_datasets/unemployment.csv"
   ) %>%
   janitor::clean_names() %>%
   na.omit(" ") %>%
-PIVOT LONGER
+  pivot_longer()
 
-JOIN SNP TO POLS. THEN ADD UNEMP
+#Joined dataset
+five_thirty_eight_1 = 
+  inner_join(pols_month, snp, by = "year")
 
-##SHORT PARAGRAPH
+five_thirty_eight_2 = 
+  inner_join(five_thirty_eight_1, unemployment, by = "year")
+
+## Pols_month dataset:after combing the president variable, it had 9 variables - year, president, repupblican and democratic governors/senators/and represenatives. 4 variables once modified - year, day, month, and close
+## SNP dataset:
+## unemployment dataset: has 13 variables (year and each month)
+## Upon completion, the table was __ by __--__ variables and __ observations/ Years range from __ to ____ and key variables include:
 
 ```
